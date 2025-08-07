@@ -5,5 +5,5 @@ Beyond content optimization on the server's side, a few interesting properties o
 
 ## General Idea
 This project intends to:
-  * Specify an optimized version of the SOCKS protocol to adapt constrained channels (reduced protocol turnaround, parallel transactions over a single bearer, transparent compression when possible, remote DNS requests, client-side filtering).
+  * Specify an optimized version of the SOCKS protocol to adapt constrained channels (reduced protocol turnaround, parallel transactions over a single bearer, transparent compression when possible, remote DNS requests, client-side filtering, reduce issues linked to TCP timers over high-latency (>10s RTT) channels, especially for connection establishment).
   * Provide an implementation that can bridge a browser's HTTP requests over a balanced-mode AX.25 bearer.
