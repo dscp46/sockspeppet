@@ -35,7 +35,7 @@ sequenceDiagram
     Proxy->>Client: 5, 0, 0, 1, <host>, <port>
     Client->>Proxy: GET|POST /... HTTP/1.x
     Proxy->>Client: TCP WIN: 0
-    Note over Proxy,SGw: Establish, or reuse existing bearer
+    Note over Proxy,SGw: Establish, or reuse existing constrained bearer
     Proxy->>SGw: CHAN(0),TID(n),GET|POST /... HTTP/1.x
     Note over SGw,Server: Establish TCP connection
     SGw->>Server: TCP ACK
