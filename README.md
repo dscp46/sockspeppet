@@ -5,5 +5,42 @@ Beyond content optimization on the server's side, a few interesting properties o
 
 ## General Idea
 This project intends to:
-  * Specify an optimized version of the SOCKS protocol to adapt constrained channels (reduced protocol turnaround, parallel transactions over a single bearer, transparent compression when possible, remote DNS requests, client-side filtering, reduce issues linked to TCP timers over high-latency (>10s RTT) channels, especially for connection establishment).
+  * Specify an optimized version of the SOCKS protocol to adapt constrained channels (reduced protocol turnaround, parallel transactions over a single bearer, transparent compression when possible, remote DNS requests, client-side filtering, reduce issues linked to TCP timers over high-latency (>10s RTT) channels, especially for connection establishment, remote cookie caching?).
   * Provide an implementation that can bridge a browser's HTTP requests over a balanced-mode AX.25 bearer.
+
+## Standard vs PeP flow
+>![WARNING]
+> This is not yet a specification, cases needs to be addressed.
+
+
+### Standard SOCKS flow
+```mermaid
+sequenceDiagram
+    Client->>Proxy: 5, 1, 0
+    Proxy->>Client: 5, 0
+    Client->>Proxy: 5, 1, 0, 3, <host>, <port>
+    Note over Proxy,Server: Establish TCP connection
+    Proxy->>Server: TCP ACK
+    Proxy->>Client: 5, 0, 0, 1, <host>, <port>
+    Client->>+Server: GET|POST /... HTTP/1.x
+    Server-->-Client: Content
+```
+
+### Sockspeppet flow
+```mermaid
+sequenceDiagram
+    Client->>Proxy: 5, 1, 0
+    Proxy->>Client: 5, 0
+    Client->>Proxy: 5, 1, 0, 3, <host>, <port>
+    Proxy->>Client: 5, 0, 0, 1, <host>, <port>
+    Client->>Proxy: GET|POST /... HTTP/1.x
+    Proxy->>Client: TCP WIN: 0
+    Note over Proxy,SGw: Establish, or reuse existing bearer
+    Proxy->>SGw: CHAN(0),TID(n),GET|POST /... HTTP/1.x
+    Note over SGw,Server: Establish TCP connection
+    SGw->>Server: TCP ACK
+    SGw->>Server: GET|POST /... HTTP/1.x
+    Server->>SGw: Content
+    SGw->>Proxy: CHAN(n), Content
+    Proxy->>Client: Content
+```
