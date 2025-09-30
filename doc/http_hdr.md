@@ -71,3 +71,40 @@ flowchart TD
 ```
 
 ## Decompression
+```mermaid
+flowchart TD
+    Init@{ shape: sm-circ, label: "Init" }
+    IPeek@{ shape: lean-r, label: "Peek stream's first byte" }
+    DInflate@{ shape: diamond, label: "<b>0xDF</b>?" }
+    Peek@{ shape: lean-r, label: "Peek one byte" }
+    DecAttrs@{ shape: lean-l, label: "Decode and send<br>Auth Digest line" }
+    DValue@{ shape: diamond, label: "Value?" }
+    RecallLine@{ shape: lean-l, label: "Recall and Send Line<br>from Dictionnary" } 
+    TxLine@{ shape: lean-l, label: "Send Line" } 
+    End@{ shape: framed-circle, label: "End" }
+
+    Init --> IPeek
+    IPeek --> DInflate
+    DInflate -->|Yes| Inflate(INFLATE headers)
+    DInflate -->|No| Peek
+    Inflate --> Peek
+    Peek --> DValue
+
+    DValue -->|Printable char| TxLine
+    DValue -->|<b>\xA0</b>| RecallLine
+    DValue -->|<b>\xA1</b>| StoreAttrs(Store attributes<br>in dictionnary)
+    DValue -->|<b>\xA2</b>| RecallAttrs(Recall and merge<br>auth attributes)
+
+    StoreAttrs --> DecAttrs
+    RecallAttrs --> DecAttrs
+    DecAttrs --> Peek
+
+    DValue -->|<b>\r</b> or <b>\n</b>| Transparent(Transparent mode)
+
+    TxLine --> StoreLine(Store Line in<br>Dictionnary)
+    StoreLine --> Peek
+
+    RecallLine --> Peek
+
+    Transparent --> End
+```
