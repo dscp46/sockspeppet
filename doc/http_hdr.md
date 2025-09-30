@@ -10,7 +10,7 @@ To avoid race conditions, one dictionnary *MUST* be used per direction.
 Once header transmission has ended, the compression scheme switches to transparent mode.
 
 ## Compression algorithm
-When the DEFLATE algorithm is used to attempt compressing a payload, it *MUST* be configured
+When the DEFLATE algorithm is used to attempt compressing a payload, it *MUST* be configured in its `Best Compression` setting.
 
 ```mermaid
 flowchart TD
@@ -29,7 +29,7 @@ flowchart TD
     TxFCred@{ shape: hex, label: "Bufferize full<br>Credentials" } 
     TxPCred@{ shape: hex, label: "Bufferize partial<br>Credentials" }
     Tx@{ shape: lean-l, label: "Send buffer" }
-    TxDeflate@{ shape: lean-l, label: "Send Deflate(buffer)" }
+    TxDeflate@{ shape: lean-l, label: "Send <b>0xDF</b> then<br>Deflate(buffer)" }
     End@{ shape: framed-circle, label: "End" }
 
     Init --> ReadL
