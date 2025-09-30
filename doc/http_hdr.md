@@ -1,10 +1,17 @@
 # HTTP Header Compression
 
-This document presents a Stateful HTTP Header Compression method.
+This document presents a method which performs Stateful HTTP Header Compression.
 
-This is useful for Layer 7 optimization over a constrained channel.
+This is useful for Layer 7 optimization on a 8-bit safe communication channel, with a bandwidth of 1200bps or below. 
+
+Terrain feedback show 65~85% airtime reduction starting from the second HTTP query, with the same user agent.
+
+To avoid race conditions, one dictionnary *MUST* be used per direction.
+Once header transmission has ended, the compression scheme switches to transparent mode.
 
 ## Compression algorithm
+When the DEFLATE algorithm is used to attempt compressing a payload, it *MUST* be configured
+
 ```mermaid
 flowchart TD
     Init@{ shape: sm-circ, label: "Init" }
@@ -16,7 +23,7 @@ flowchart TD
     DProhibHdr@{ shape: diamond, label: "<b>Connection</b><br>or <b>Keep-Alive</b><br>header?"}
     DDicLine@{ shape: diamond, label: "Header line<br>in dictionnary?" }
     DDeflateBuf@{ shape: diamond, label: "Deflate(buffer) smaller<br>than buffer?" }
-    Copy@{ shape: hex, label: "Bufferize until stream end" } 
+    Copy@{ shape: lean-l, label: "Transparently copy data<br> until connection closed" } 
     TxLine@{ shape: hex, label: "Bufferize Line" } 
     TxRef@{ shape: hex, label: "Bufferize dictionnary<br>reference" }
     TxFCred@{ shape: hex, label: "Bufferize full<br>Credentials" } 
@@ -30,7 +37,7 @@ flowchart TD
     DFirstLine -->|Yes| TxLine
     DFirstLine -->|No| DEmpty
 
-    DEmpty -->|Yes| Copy
+    DEmpty -->|Yes| DDeflateBuf
     DEmpty -->|No| DAuthD
 
     DAuthD -->|Yes| DAuthDC
@@ -54,13 +61,13 @@ flowchart TD
     TxLine --> ReadL
     
     TxRef --> ReadL
-    Copy --> DDeflateBuf
 
     DDeflateBuf -->|Yes| TxDeflate
     DDeflateBuf -->|No| Tx
 
-    Tx --> End
-    TxDeflate --> End
+    Tx --> Copy
+    TxDeflate --> Copy
+    Copy --> End
 ```
 
 ## Decompression
