@@ -9,7 +9,7 @@ This project intends to:
   * Provide an implementation that can bridge a browser's HTTP requests over a balanced-mode AX.25 bearer.
 
 ## Standard vs PeP flow
->![WARNING]
+> [!WARNING]
 > This is not yet a specification, cases needs to be addressed.
 
 
