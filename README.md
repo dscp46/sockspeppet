@@ -36,7 +36,8 @@ sequenceDiagram
     Client->>Proxy: GET|POST /... HTTP/1.x
     Proxy->>Client: TCP WIN: 0
     Note over Proxy,SGw: Establish, or reuse existing constrained bearer
-    Proxy->>SGw: CHAN(0),TID(n),GET|POST /... HTTP/1.x
+    Proxy->>SGw: CHAN(0),TID(n),<host>,<port>
+    Proxy->>SGw: CHAN(n),HTTP request
     Note over SGw,Server: Establish TCP connection
     SGw->>Server: TCP ACK
     SGw->>Server: GET|POST /... HTTP/1.x
@@ -44,3 +45,6 @@ sequenceDiagram
     SGw->>Proxy: CHAN(n), Content
     Proxy->>Client: Content
 ```
+
+### Handling abnormal cases
+When a connection fails, the Proxy SHALL serve a `HTTP/1.1 503 Service Unavailable` reply, with the failure cause in the page content.
