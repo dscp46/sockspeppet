@@ -46,5 +46,8 @@ sequenceDiagram
     Proxy->>Client: Content
 ```
 
+### OTA protocol Fixmes
+- Better specify the "User pushes first" (Bufferize first query then send) vs "Server pushes first" (Server answers first) 
+
 ### Handling abnormal cases
 When a connection fails, the Proxy SHALL serve a `HTTP/1.1 503 Service Unavailable` reply, with the failure cause in the page content.
