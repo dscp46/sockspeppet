@@ -27,6 +27,9 @@ sequenceDiagram
 ```
 
 ### Sockspeppet flow
+> ![WARNING]
+> This is not yet a protocol definition.
+
 ```mermaid
 sequenceDiagram
     Client->>Proxy: 5, 1, 0
@@ -36,7 +39,7 @@ sequenceDiagram
     Client->>Proxy: GET|POST /... HTTP/1.x
     Proxy->>Client: TCP WIN: 0
     Note over Proxy,SGw: Establish, or reuse existing constrained bearer
-    Proxy->>SGw: CHAN(0),TID(n),<host>,<port>
+    Proxy->>SGw: CHAN(0),TID(n),<cmd>,<host>,<port>,<defer_bytes:uint32_t>
     Proxy->>SGw: CHAN(n),HTTP request
     Note over SGw,Server: Establish TCP connection
     SGw->>Server: TCP ACK
@@ -46,8 +49,20 @@ sequenceDiagram
     Proxy->>Client: Content
 ```
 
-### OTA protocol Fixmes
-- Better specify the "User pushes first" (Bufferize first query then send) vs "Server pushes first" (Server answers first) 
+### OTA protocol
+The Over-The-Air proxy protocol is divided into 16 virtual communication circuits. 
+
+It requires a frame-oriented, reliable, ordered delivery, 8-bit clean communication channel. The underlying communication layer **MUST** preserve the integrity of packets. Packets **SHALL NOT** be fragmented, unless the underlying layer is able to use a transparent Packet Assembler-Disassembler.
+
+Circuit 0 is the signaling circuit, used to set up and tear down connections associated to the 15 other circuits.
+
+#### Commands
+FIXME
+
+- Path Maximum Packet Size Negociation
+- Connect to remote server
+- Bind Port
+- Send UDP Packet
 
 ### Handling abnormal cases
 When a connection fails, the Proxy SHALL serve a `HTTP/1.1 503 Service Unavailable` reply, with the failure cause in the page content.
