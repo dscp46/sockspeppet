@@ -54,6 +54,22 @@ The Over-The-Air proxy protocol is divided into 16 virtual communication circuit
 
 It requires a frame-oriented, reliable, ordered delivery, 8-bit clean communication channel. The underlying communication layer **MUST** preserve the integrity of packets. Packets **SHALL NOT** be fragmented, unless the underlying layer is able to use a transparent Packet Assembler-Disassembler.
 
+The first byte of every packet is the Circuit Control Byte, which is composed as follow (MSB is on the left):
+```mermaid
+---
+title: "Circuit Control Byte"
+config:
+  packet:
+    bitsPerRow: 8
+---
+packet
++1: "FIN"
++1: "RST"
++1: "URG"
++1: "PSH"
++4: "Circuit ID"
+```
+
 Circuit 0 is the signaling circuit, used to set up and tear down connections associated to the 15 other circuits.
 
 #### Commands
